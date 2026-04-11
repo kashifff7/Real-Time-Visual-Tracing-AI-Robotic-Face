@@ -2,10 +2,8 @@ ai_voice_exchange.py import requests
 import sounddevice as sd import wave
 import os import time
 
-# OpenAI API setup API_KEY = "api_key_here"
 WHISPER_URL = "https://api.openai.com/v1/audio/transcriptions" GPT_URL = "https://api.openai.com/v1/chat/completions"
 
-# Function to record audio
 def record_audio(duration=10, samplerate=16000): print(f"Recording for {duration} seconds...")
 audio_data = sd.rec(int(samplerate * duration), samplerate=samplerate, channels=1, dtype="int16")
 sd.wait()
@@ -14,7 +12,6 @@ with wave.open(file_path, 'wb') as wf: wf.setnchannels(1) wf.setsampwidth(2) wf.
  
 return file_path
 
-# Function to transcribe audio using OpenAI's Whisper API def transcribe_audio(file_path):
 try:
 print("Uploading audio for transcription...")
 headers = {"Authorization": f"Bearer {API_KEY}"} files = {
@@ -25,7 +22,6 @@ result = response.json() print("Transcription complete!") return result.get("tex
 except requests.exceptions.RequestException as e: print(f"Error during transcription: {e}")
 return "Could not transcribe audio."
 
-# Function to interact with OpenAI GPT and generate a response def chat_with_openai(prompt):
 try:
 print("Sending message to GPT...")
 headers = {"Authorization": f"Bearer {API_KEY}"} json_data = {
