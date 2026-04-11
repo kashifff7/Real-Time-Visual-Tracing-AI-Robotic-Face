@@ -49,7 +49,6 @@ AI generates speech response
 Jaw servo synchronizes with speech output
 
 real-time-ai-robotic-face/
-│
 ├── main.py
 ├── Eyelid and Eyeball Tracking.py
 ├── ai.py
