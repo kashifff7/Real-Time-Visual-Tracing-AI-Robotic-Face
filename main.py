@@ -1,26 +1,30 @@
-main.py
-from eyelid_and_tracking import run_eyelid_and_tracking from jaw_movement import speak_with_jaw
-from ai_voice_exchange import record_audio, transcribe_audio, chat_with_openai
-import os import threading
+# main.py
+import threading
+import signal
+from eye_module import track_face_and_move_eyes
+from ai_voice_bot import voice_loop
+from utils.servo_controller import kit
+
+shutdown_event = threading.Event()
+
+def signal_handler(sig, frame):
+    print("\n[INFO] Shutting down...")
+    shutdown_event.set()
 
 def main():
-print("Voice Assistant is ready. Press Ctrl+C to stop.")
+    signal.signal(signal.SIGINT, signal_handler)
+    print("[INFO] System started.")
 
-tracking_thread = threading.Thread(target=run_eyelid_and_tracking) tracking_thread.start()
+    eye_thread = threading.Thread(target=track_face_and_move_eyes, args=(shutdown_event,))
+    eye_thread.start()
 
-speak_with_jaw("Hello! How can I assist you today?")
+    try:
+        voice_loop(shutdown_event)
+    finally:
+        shutdown_event.set()
+        eye_thread.join()
+        kit.servo[8].angle = None
+        print("[INFO] System shutdown complete.")
 
-while True:
-user_audio_path = record_audio(duration=10)
-
-user_input = transcribe_audio(user_audio_path) print(f"You said: {user_input}")
-
-if user_input.strip().lower() == "exit": speak_with_jaw("Goodbye!") os.remove(user_audio_path)
- 
-break
-
-ai_response = chat_with_openai(user_input) print(f"AI says: {ai_response}")
-
-
-
-if name == "main": main()
+if __name__ == "__main__":
+    main()
