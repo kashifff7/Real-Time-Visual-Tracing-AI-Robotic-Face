@@ -1,4 +1,3 @@
-# main.py
 import threading
 import signal
 from eye_module import track_face_and_move_eyes
